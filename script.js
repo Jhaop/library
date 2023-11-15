@@ -5,7 +5,7 @@ const bookTable = document.getElementById('myBooks');
 const delBtns = document.querySelectorAll('.delBtn');
 
 function deleteBook(index) {
-    myLibrary.splice(index, 1);
+    myLibrary.deleteBook(index);
     arrangeIndexes();
 }
 
@@ -24,13 +24,14 @@ function updateTable() {
     let c3 = row.insertCell(2);
     let c4 = row.insertCell(3);
     let c5 = row.insertCell(4);
-    let booksCount = myLibrary.length;
-    c1.innerText = myLibrary[booksCount-1].title;
-    c2.innerText = myLibrary[booksCount-1].author;
-    c3.innerText = myLibrary[booksCount-1].pages;
+    let booksCount = myLibrary.bookCounter();
+    let book = myLibrary.getBook(booksCount-1);
+    c1.innerText = book.title;
+    c2.innerText = book.author;
+    c3.innerText = book.pages;
     let readStatus = document.createElement('div');
     readStatus.classList.add('readStatus');
-    if(myLibrary[booksCount-1].read === 'Yes'){
+    if(book.read === 'Yes'){
         readStatus.classList.toggle('readCheck');
     } else{
         readStatus.classList.toggle('readUncheck');
@@ -49,11 +50,49 @@ function updateTable() {
 
 
 function addBook(title, author, pages, read) {
-    myLibrary[myLibrary.length] = new Book(title, author, pages, read);
+    myLibrary.addBook(new Book(title, author, pages, read));
 
 }
 
-function Book(title, author, pages, read) {
+class Book {
+    constructor(title, author, pages, read) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
+
+    info() {
+        return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`;
+    }
+
+    get bookTitle() {
+        return this.title;
+    }
+    set bookTitle(title) {
+        this.title = title;
+    }
+    get bookAuthor() {
+        return this.author;
+    }
+    set bookAuthor(author) {
+        this.author = author;
+    }
+    get bookPages() {
+        return this.pages;
+    }
+    set bookPages(pages) {
+        this.pages = pages;
+    }
+    get bookRead() {
+        return this.read;
+    }
+    set bookRead(read) {
+        this.read = read;
+    }
+}
+
+/*function Book(title, author, pages, read) {
     this.title = title
     this.author = author
     this.pages = pages
@@ -62,17 +101,47 @@ function Book(title, author, pages, read) {
     this.info = function() {
         return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`;
     };
+}*/
+
+class Library {
+    collection = [];
+    constructor() {
+        this.collection[0] = new Book('Nineteen Eighty-Four', 'George Orwell', 450, 'Yes');
+        this.collection[1] = new Book('The Great Gatsby', 'F. Scott Fitzgerald', 383, 'Yes');
+        this.collection[2] = new Book('To Kill a Mockingbird', 'Harper Lee', 289, 'Yes');
+    }
+
+    addBook(book) {
+        this.collection[this.collection.length] = book;
+    }
+
+    displayBooks() {
+        for(let i = 0; i < this.collection.length; i++) {
+            console.log(this.collection[i].info());      
+        }
+    }
+
+    bookCounter() { return this.collection.length; }
+
+    getBook(index) { return this.collection[index]; }
+
+    deleteBook(index) {
+        this.collection.splice(index, 1);
+    }
+    updateBook(book, index) {
+        this.collection[index] = book;
+    }
 }
 
-const myLibrary = [];
+const myLibrary = new Library();
 
-myLibrary[0] = new Book('Nineteen Eighty-Four', 'George Orwell', 450, 'Yes');
+/*myLibrary[0] = new Book('Nineteen Eighty-Four', 'George Orwell', 450, 'Yes');
 myLibrary[1] = new Book('The Great Gatsby', 'F. Scott Fitzgerald', 383, 'Yes');
 myLibrary[2] = new Book('To Kill a Mockingbird', 'Harper Lee', 289, 'Yes');
 
 function displayBooks() {
     myLibrary.forEach((Book) => console.log(Book.info()));
-}
+}*/
 
 submitButton.addEventListener('click', () => {
     const bookTitle = document.getElementById('title');
@@ -90,6 +159,38 @@ addButton.addEventListener('click', () => {
     bookAdder.style.display = "contents";
 } );
 
+function fillTable() {
+    let totalBooks = myLibrary.bookCounter();
+    for(let i = 0; i < totalBooks; i++) {
+        let book = myLibrary.getBook(i);
+        let row = bookTable.insertRow(-1);
+        let c1 = row.insertCell(0);
+        let c2 = row.insertCell(1);
+        let c3 = row.insertCell(2);
+        let c4 = row.insertCell(3);
+        let c5 = row.insertCell(4);
+        c1.innerText = book.title;
+        c2.innerText = book.author;
+        c3.innerText = book.pages;
+        let readStatus = document.createElement('div');
+        readStatus.classList.add('readStatus')
+        if(book.read === 'Yes') {
+            readStatus.classList.toggle('readCheck');
+        } else {
+            readStatus.classList.toggle('readUncheck');
+        }
+        readStatus.dataset.index = i;
+        checkListener(readStatus);
+        c4.appendChild(readStatus);
+        let newBtn = document.createElement('button');
+        newBtn.innerText = 'Delete';
+        newBtn.classList.add('delBtn');
+        newBtn.dataset.index = i;
+        addListener(newBtn);
+        c5.appendChild(newBtn);
+    }
+}
+/*
 function fillTable() {
     myLibrary.forEach((Book, index) => {
 
@@ -120,12 +221,11 @@ function fillTable() {
         addListener(newBtn);
         c5.appendChild(newBtn);
     })
-}
-
+}*/
+/*
 function checkListener(button) {
     button.addEventListener('click', function() {
         let ind = button.getAttribute('data-index');
-        console.log(ind);
         if(myLibrary[parseInt(ind)].read === 'Yes') {
             myLibrary[parseInt(ind)].read = 'No';
             button.classList.toggle('readUncheck');
@@ -137,6 +237,24 @@ function checkListener(button) {
             button.classList.toggle('readUncheck');
         }
     })
+}*/
+
+function checkListener(button) {
+    button.addEventListener('click', function (){
+        let index = button.getAttribute('data-index');
+        let book = myLibrary.getBook(index);
+        if(book.read === 'Yes') {
+            book.read = 'No';
+            button.classList.toggle('readUncheck');
+            button.classList.toggle('readCheck');
+        }
+        else {
+            book.read = 'Yes';
+            button.classList.toggle('readCheck');
+            button.classList.toggle('readUncheck');
+        }
+        myLibrary.updateBook(book, index);
+    });
 }
 
 function addListener(button) {
