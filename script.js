@@ -92,16 +92,7 @@ class Book {
     }
 }
 
-/*function Book(title, author, pages, read) {
-    this.title = title
-    this.author = author
-    this.pages = pages
-    this.read = read
 
-    this.info = function() {
-        return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read}`;
-    };
-}*/
 
 class Library {
     collection = [];
@@ -135,24 +126,27 @@ class Library {
 
 const myLibrary = new Library();
 
-/*myLibrary[0] = new Book('Nineteen Eighty-Four', 'George Orwell', 450, 'Yes');
-myLibrary[1] = new Book('The Great Gatsby', 'F. Scott Fitzgerald', 383, 'Yes');
-myLibrary[2] = new Book('To Kill a Mockingbird', 'Harper Lee', 289, 'Yes');
 
-function displayBooks() {
-    myLibrary.forEach((Book) => console.log(Book.info()));
-}*/
-
-submitButton.addEventListener('click', () => {
-    const bookTitle = document.getElementById('title');
-    const bookAuthor = document.getElementById('author');
-    const bookPages = document.getElementById('pages');
-    const bookRead = document.getElementById('select')
-    addBook(bookTitle.value, bookAuthor.value, bookPages.value, bookRead.value);
-    bookTitle.innerHTML = '';
-    bookAuthor.innerHTML = '';
-    bookPages.innerHTML = '';
-    updateTable();
+submitButton.addEventListener('click', (event) => {
+    const inputTitle = document.getElementById('title');
+    const titleError = document.querySelector('#title + span#titleError');
+    const inputAuthor = document.getElementById('author');
+    const authorError = document.querySelector('#author + span#authorError');
+    const inputPages = document.getElementById('pages');
+    const pagesError = document.querySelector('#pages + span#pagesError');
+    const inputRead = document.getElementById('select');
+    if(inputTitle.validity.valid && inputAuthor.validity.valid && inputPages.validity.valid){
+        addBook(inputTitle.value, inputAuthor.value, inputPages.value, inputRead.value);
+        inputTitle.value = '';
+        inputAuthor.value = '';
+        inputPages.value = '';
+        updateTable();
+    } else {
+        showError(inputTitle, titleError);
+        showError(inputAuthor, authorError);
+        showError(inputPages, pagesError);
+    }
+    event.preventDefault();
 });
 
 addButton.addEventListener('click', () => {
@@ -190,54 +184,7 @@ function fillTable() {
         c5.appendChild(newBtn);
     }
 }
-/*
-function fillTable() {
-    myLibrary.forEach((Book, index) => {
 
-        let row = bookTable.insertRow(-1);
-        let c1 = row.insertCell(0);
-        let c2 = row.insertCell(1);
-        let c3 = row.insertCell(2);
-        let c4 = row.insertCell(3);
-        let c5 = row.insertCell(4);
-        console.log(`${Book.title} by ${Book.author}, ${Book.pages} pages, read`);
-        c1.innerText = Book.title;
-        c2.innerText = Book.author;
-        c3.innerText = Book.pages;
-        let readStatus = document.createElement('div');
-        readStatus.classList.add('readStatus')
-        if(Book.read === 'Yes') {
-            readStatus.classList.toggle('readCheck');
-        } else {
-            readStatus.classList.toggle('readUncheck');
-        }
-        readStatus.dataset.index = index;
-        checkListener(readStatus);
-        c4.appendChild(readStatus);
-        let newBtn = document.createElement('button');
-        newBtn.innerText = 'Delete';
-        newBtn.classList.add('delBtn');
-        newBtn.dataset.index = index;
-        addListener(newBtn);
-        c5.appendChild(newBtn);
-    })
-}*/
-/*
-function checkListener(button) {
-    button.addEventListener('click', function() {
-        let ind = button.getAttribute('data-index');
-        if(myLibrary[parseInt(ind)].read === 'Yes') {
-            myLibrary[parseInt(ind)].read = 'No';
-            button.classList.toggle('readUncheck');
-            button.classList.toggle('readCheck');
-        }
-        else {
-            myLibrary[parseInt(ind)].read = 'Yes';
-            button.classList.toggle('readCheck');
-            button.classList.toggle('readUncheck');
-        }
-    })
-}*/
 
 function checkListener(button) {
     button.addEventListener('click', function (){
@@ -264,6 +211,55 @@ function addListener(button) {
         deleteBook(ind);
     });
 }
+
+const inputTitle = document.getElementById('title');
+const titleError = document.querySelector('#title + span#titleError');
+const inputAuthor = document.getElementById('author');
+const authorError = document.querySelector('#author + span#authorError');
+const inputPages = document.getElementById('pages');
+const pagesError = document.querySelector('#pages + span#pagesError');
+
+inputTitle.addEventListener('input', () => {
+    if(inputTitle.validity.valid) {
+        titleError.textContent = "";
+        titleError.className = 'titleError';
+    } else {
+        showError(inputTitle, titleError);
+    }
+});
+inputAuthor.addEventListener('input', () => {
+    if(inputAuthor.validity.valid) {
+        authorError.textContent = "";
+        authorError.className = 'authorError';
+    } else {
+        showError(inputAuthor, authorError);
+    }
+});
+inputPages.addEventListener('input', () => {
+    if(inputPages.validity.valid) {
+        pagesError.textContent = "";
+        pagesError.className = 'pagesError';
+    } else {
+        showError(inputPages, pagesError);
+    }
+});
+
+function showError(element, errorLog) {
+
+    if( element.validity.valueMissing ) {
+
+        errorLog.textContent = 'You need to complete this.';
+    }
+    if( element.validity.tooShort) {
+
+        errorLog.textContent = `You need to enter at least ${element.getAttribute('minlength')} characters`;
+    }
+    if ( element.validity.rangeOverflow || element.validity.rangeUnderflow ) {
+
+        errorLog.textContent = `Books pages range from ${element.getAttribute('min')} to ${element.getAttribute('max')}`;
+    }
+}
+
 
 fillTable();
 

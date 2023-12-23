@@ -29,6 +29,9 @@ body {
 
 #book-adder{
     display: none;
+    background-color: red;
+    border: 2px solid black;
+    width: 400px;
 }
 
 #myBooks {
@@ -67,12 +70,15 @@ th {
     width: 10rem;
 }
 
-select {
+form > #select {
+    grid-row: 8 / 9;
+    grid-column: 1 / 2;
     padding: 3px 20px;
-    margin: 15px;
 }
 
-#submitBook {
+form > #submitBook {
+    grid-row: 9 / 10;
+    grid-column: 1 / 2;
     font-size: 1rem;
     background-color: #882121;
     color:white;
@@ -120,4 +126,72 @@ select {
     background-size:contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+#book-form {
+    display: grid;
+    grid-template-rows: repeat(9, 0.7fr);
+    grid-template-columns: repeat(2, 150px);
+    align-items: start;
+    gap: 0px;
+}
+form > label {
+    align-self:self-end;
+}
+form > input,
+form > select {
+    align-self: self-start;
+    margin-bottom: 10px;
+
+}
+
+form > #titleLabel {
+    grid-row: 1 / 2;
+    grid-column: 1 / 3;
+}
+input > #title {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+}
+form > #authorLabel {
+    grid-row: 3 / 4;
+    grid-column: 1 / 3;
+}
+form > #author {
+    grid-row: 4 / 5;
+    grid-column: 1 / 2;
+}
+form > #pagesLabel {
+    grid-row: 5 / 6;
+    grid-column: 1 / 3;
+}
+form > #pages {
+    grid-row: 6 / 7;
+    grid-column: 1 / 2;
+}
+form > #readLabel {
+    grid-row: 7 / 8;
+    grid-column: 1 / 3;
+}
+form > span {
+    color: rgb(248, 4, 4);
+    font-weight: 700;
+    padding-left: 10px;
+    align-self: self-start;
+}
+form > #titleError {
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
+}
+form > #authorError {
+    grid-row: 4 / 5;
+    grid-column: 2 / 3;
+}
+form > #pagesError {
+    grid-row: 6 / 7;
+    grid-column: 2 / 3;
+}
+form > #readError {
+    grid-row: 8 / 9;
+    grid-column: 2 / 3;
 }
